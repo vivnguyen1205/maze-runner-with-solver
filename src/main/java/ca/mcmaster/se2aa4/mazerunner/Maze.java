@@ -1,6 +1,6 @@
 package ca.mcmaster.se2aa4.mazerunner;
 import ca.mcmaster.se2aa4.mazerunner.Coordinate;
-// MAZE is class to process the maze, find the entrance/exit and wall/passageway
+
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -29,9 +29,9 @@ public class Maze {
     private ArrayList<String> maze;
 
 
-    private void loadMaze(String filename)throws FileNotFoundException, IOException { // method to turn maze file into array list
+    private void loadMaze(String filename)throws FileNotFoundException, IOException {
 
-        this.maze = new ArrayList<>(); //
+        this.maze = new ArrayList<>();
         int maxCols = 0;
         BufferedReader reader = new BufferedReader(new FileReader(filename));
         String line;
@@ -40,7 +40,7 @@ public class Maze {
             if(line.length() != 0){
                 maxCols = line.length();
             }else{
-                line = " ".repeat(maxCols); // adding spaces to empty lines
+                line = " ".repeat(maxCols);
             }
             maze.add(line);
         }
@@ -59,48 +59,47 @@ public class Maze {
 
 
     }
-    private void findStart(){ // finding entrance of maze
+    private void findStart(){
         for(int row = 0; row< this.numRows; row++){
             Coordinate c = new Coordinate(row, 0);
-            if(getLocationType(c)== ENTRANCE){ //if the location type is type ENTRANCE, it has a '_'
+            if(getLocationType(c)== ENTRANCE){
                 this.start = c;
-                System.out.println("this is the start");
-                System.out.println(this.start.getRow());
-                System.out.println(this.start.getCol());
                 return;
             }
 
         }
-
+        System.out.println("this is the start");
+        System.out.println(this.start.getRow());
+        System.out.println(this.start.getCol());
 
     }
     public Coordinate getStart(){
         return this.start;
     }
     public int getLocationType(Coordinate location){
-        System.out.println("getting location type "); // assigning values to each coordinate on the maze depending on what the character at that location si
+        System.out.println("getting location type ");
         System.out.println(location.getRow());
         System.out.println(location.getCol());
-        if(location.getRow()<0|| location.getRow() >= this.numRows){ // if rownumber is greater than num rows or coordinate is less than 0, invalid
+        if(location.getRow()<0|| location.getRow() >= this.numRows){
             return INVALID;
         }
-        if(location.getCol()<0|| location.getCol() >= this.numCols){ // if colnumber is greater than num cols or coordinate is less than 0, invalid
+        if(location.getCol()<0|| location.getCol() >= this.numCols){
             return INVALID;
         }
-        if(this.maze.get(location.getRow()).charAt(location.getCol()) == '#'){ // if coordinate contains #, it is wall
+        if(this.maze.get(location.getRow()).charAt(location.getCol()) == '#'){
             return WALL;
         }
 
-        if(this.maze.get(location.getRow()).charAt(location.getCol()) == ' ' && location.getCol()== this.numCols-1 ){ // if empty space and the column number is maxcolumun number, it is entrance
+        if(this.maze.get(location.getRow()).charAt(location.getCol()) == ' ' && location.getCol()== this.numCols-1 ){
             return EXIT;
         }
-        if(this.maze.get(location.getRow()).charAt(location.getCol()) == ' ' && location.getCol()== 0 ){ // if location has empty space wat column 0, it is entrance
+        if(this.maze.get(location.getRow()).charAt(location.getCol()) == ' ' && location.getCol()== 0 ){
             return ENTRANCE;
         }
-        if(this.maze.get(location.getRow()).charAt(location.getCol()) == ' '){ // if location contains "_" empty space, it is passageway
+        if(this.maze.get(location.getRow()).charAt(location.getCol()) == ' '){
             return PASS;
         }
-        return INVALID; // otherwise, coordinate is invalid
+        return INVALID;
     }
 
 

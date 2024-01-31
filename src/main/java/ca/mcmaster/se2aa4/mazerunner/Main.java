@@ -30,25 +30,14 @@ public class Main {
             Maze maze = new Maze(mazeFile);
             Walker walker = new Walker(maze);
             String path = cmd.getOptionValue("p");
-            if(path==null || path.length()==0){
-                System.out.println("no path given");
-                String solution = walker.findPath();
-                System.out.println("Solution is:");
-                System.out.println(solution);
+            System.out.println(path);
+            boolean success = walker.checkPath("FFFFF");
+            if(success){
+                logger.info("correct path!");
             }
             else{
-                System.out.println("path given");
-                System.out.println(path);
-                int success = walker.checkPath(path, true);
-                if(success==Walker.EXIT){
-                    logger.info("correct path!");
-                }
-                else{
-                    logger.info("incorrect path");
-                }
-
+                logger.info("incorrect path");
             }
-
 
 
         }
