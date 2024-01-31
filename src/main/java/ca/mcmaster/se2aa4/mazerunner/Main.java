@@ -30,16 +30,19 @@ public class Main {
             Maze maze = new Maze(mazeFile);
             Walker walker = new Walker(maze);
             String path = cmd.getOptionValue("p");
-            System.out.println(path);
-            boolean success = walker.checkPath("FFFFF");
-            if(success){
-                logger.info("correct path!");
+            if(path==null || path.length()==0){
+                String solution = walker.findPath();
+                logger.info(solution);
             }
             else{
-                logger.info("incorrect path");
+                int success = walker.checkPath(path, true);
+                if(success==Walker.EXIT){
+                    logger.info("correct path");
+                }
+                else{
+                    logger.info("incorrect path");
+                }
             }
-
-
         }
 
         catch(FileNotFoundException e ){
@@ -53,8 +56,6 @@ public class Main {
 
             logger.error("/!\\ An error has occured /!\\");
         }
-        logger.info("**** Computing path");
-        logger.info("PATH NOT COMPUTED");
-        logger.info("** End of MazeRunner");
+
     }
 }
