@@ -1,48 +1,107 @@
-// Walker Class - class
-
 package ca.mcmaster.se2aa4.mazerunner;
-// class to
+
 import ca.mcmaster.se2aa4.mazerunner.Coordinate;
+
 public class Walker {
     private Maze maze;
-    private Coordinate location;
+   private Coordinate location;
+   private int direction;
+   private static final int NORTH =0;
+   private static final int EAST =1;
+   private static final int SOUTH =2;
+   private static final int WEST =3;
 
 
 
-    Walker(Maze maze){
+   Walker(Maze maze){
+       this.maze = maze;
+       this.location = maze.getStart();
+       this.direction = EAST;
 
-    }
-    private String compressPath(String path){ ///takes canonical form to factored form
-        String factoredPath = "";
-        for(int i =0; i<path.length();i++){
-            if(path.charAt(i)== Character.isLetter()){
-                factoredPath+=path.charAt(i);
-            } else if (// the character is a number, repreat the letter x times and add to factored solution)
-
-        }
-    }
-    private String uncompressPath(String path){ // takes input of factored form and turns into canonical form
-
-        String newPath = "";
-        int repeater = 1;
-        String r = "";
-        for(int i =0;i <path.length();i++) {
-            if (Character.isLetter(path.charAt(i))) {
-
+   }
+   private String convertPath(String path){
+    String newPath = "";
+    int repeater = 1;
+    String r = "";
+    for(int i =0;i <path.length();i++){
+        if(Character.isLetter(path.charAt(i))){
+            String add=""+path.charAt(i);
+            if(r.length()>0){
+                repeater= Integer.parseInt(r);
+                System.out.println("repeater ="+repeater);
             }
+
+            newPath+=add.repeat(repeater);
+            repeater=1;
         }
-        return newPath;
+        else {
+            r+=path.charAt(i);
+        }
     }
-    public int checkPath(String path, boolean fullSol) { //checks if user input works
-        path=uncompressPath(path);
+    return newPath;
+   }
+   public boolean checkPath(String path) {
+       path=convertPath(path);
+       System.out.println(path);
+       System.exit(0);
+       for (int i = 0; i < path.length(); i++) {
+           step(path.charAt(i));
+           int r = maze.getLocationType(this.location);
+           if (r == Maze.WALL) {
+               System.out.println("hit the wall");
+               return false;
+           } else if (r == Maze.INVALID) {
+               System.out.println("hit invalid");
+               return false;
+           } else if (r == Maze.EXIT) {
+               System.out.println("hit exit");
+               if(i==path.length()-1){
+                   return true;
+               }
+               else{
+                   System.out.println("Reached exit but there are more instructions");
+                   return false;
+               }
+           }
+       }
+       return false;
+   }
 
-    }
+   public void step(char instruction){
+       System.out.println("stepping instruction = " + instruction);
+       if(instruction == 'L'){
+           if(this.direction ==0){
+               this.direction = 3;
+           }
+           else{
+               this.direction--;
+           }
 
-    public String findPath(){
-        String solution = "";
-        //start at entrance given by the findENtrance method, check next empty space and that there is a wall to the right, contunue through maze and check that there is a wall to the right for every step
+       } else if (instruction == 'R') {
+           if(this.direction ==3){
+               this.direction = 0;
+           }
+           else{
+               this.direction++;
+           }
 
-        return solution;
-    }
+       } else if (instruction=='F') {
+           if(this.direction==NORTH){
+               this.location.goNorth();
+           }
+           else if(this.direction== EAST){
+               this.location.goEast();
+           }
+           else if(this.direction== SOUTH){
+               this.location.goSouth();
+           }
+           else if(this.direction== WEST){
+               this.location.goWest();
+           }
+
+           }
+            System.out.println("move to location ="+this.location.getRow() + "," + this.location.getCol());
+       }
 
 }
+

@@ -1,5 +1,5 @@
 package ca.mcmaster.se2aa4.mazerunner;
-// class to change the coordiate every time the walker makes a move, in every direction
+
 public class Coordinate {
     private int row;
     private int col;
@@ -8,9 +8,7 @@ public class Coordinate {
         this.row = row;
         this.col = col;
     }
-    public Coordinate copy(){
-        return new Coordinate(this.row, this.col);
-    }
+
     public int getRow(){
         return row;
 
@@ -27,16 +25,16 @@ public class Coordinate {
     public void setCol(int col) {
         this.col = col;
     }
-    public void goNorth(){ // subtract from row number when moving north
+    public void goNorth(){
         this.row--;
-    }// if move north, subtract row
-    public void goSouth(){ // add to row number if going south
+    }
+    public void goSouth(){
         this.row++;
-    } // if moving south, add to row
-    public void goEast(){ //
+    }
+    public void goEast(){
         this.col++;
-    }// if moving east, add column
+    }
     public void goWest(){
         this.col--;
-    } // if moving west, subtract col
+    }
 }

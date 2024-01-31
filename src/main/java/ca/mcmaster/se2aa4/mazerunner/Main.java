@@ -28,29 +28,33 @@ public class Main {
             CommandLine cmd = parser.parse(options, args);
             String mazeFile = cmd.getOptionValue("i");
             Maze maze = new Maze(mazeFile);
+            Walker walker = new Walker(maze);
             String path = cmd.getOptionValue("p");
-            if(path==null || path.length()==0){
-                break;
+            System.out.println(path);
+            boolean success = walker.checkPath("FFFFF");
+            if(success){
+                logger.info("correct path!");
             }
             else{
-
-                logger.info("correct path");
-            }
-                else{
                 logger.info("incorrect path");
             }
+
+
         }
-    }
 
         catch(FileNotFoundException e ){
-        logger.info("File Not Found");
-    }
+            logger.info("File Not Found");
+        }
         catch(IOException e2){
-        logger.info("Invalid File");
-    }
+            logger.info("Invalid File");
+        }
         catch(Exception e3) {
-        e3.printStackTrace();
+            e3.printStackTrace();
 
-        logger.error("/!\\ An error has occured /!\\");
+            logger.error("/!\\ An error has occured /!\\");
+        }
+        logger.info("**** Computing path");
+        logger.info("PATH NOT COMPUTED");
+        logger.info("** End of MazeRunner");
     }
 }

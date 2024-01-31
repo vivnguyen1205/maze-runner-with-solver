@@ -32,17 +32,22 @@ public class Maze {
     private void loadMaze(String filename)throws FileNotFoundException, IOException {
 
         this.maze = new ArrayList<>();
-
+        int maxCols = 0;
         BufferedReader reader = new BufferedReader(new FileReader(filename));
         String line;
         while ((line = reader.readLine()) != null) {
             System.out.println(line);
+            if(line.length() != 0){
+                maxCols = line.length();
+            }else{
+                line = " ".repeat(maxCols);
+            }
             maze.add(line);
-            this.numCols = line.length();
         }
+        this.numCols = maxCols;
         this.numRows = this.maze.size();
-        System.out.println(numCols);
-        System.out.println(numRows);
+        System.out.println(this.numCols);
+        System.out.println(this.numRows);
     }
 
 
@@ -61,13 +66,20 @@ public class Maze {
                 this.start = c;
                 return;
             }
+
         }
+        System.out.println("this is the start");
+        System.out.println(this.start.getRow());
+        System.out.println(this.start.getCol());
 
     }
     public Coordinate getStart(){
         return this.start;
     }
     public int getLocationType(Coordinate location){
+        System.out.println("getting location type ");
+        System.out.println(location.getRow());
+        System.out.println(location.getCol());
         if(location.getRow()<0|| location.getRow() >= this.numRows){
             return INVALID;
         }
