@@ -31,9 +31,9 @@ public class Main {
             Walker walker = new Walker(maze);
             String path = cmd.getOptionValue("p");
             System.out.println(path);
-            boolean success = walker.checkPath("FFFFF");
+            boolean success = walker.checkPath(path);
             if(success){
-                logger.info("correct path!");
+                logger.info("correct path");
             }
             else{
                 logger.info("incorrect path");

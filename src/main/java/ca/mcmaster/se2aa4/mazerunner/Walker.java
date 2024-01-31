@@ -10,7 +10,9 @@ public class Walker {
    private static final int EAST =1;
    private static final int SOUTH =2;
    private static final int WEST =3;
-
+   public static final int VALID = 1;
+   public static final int INVALID = 2;
+   public static final int EXIT = 3;
 
 
    Walker(Maze maze){
@@ -33,6 +35,7 @@ public class Walker {
 
             newPath+=add.repeat(repeater);
             repeater=1;
+            r = "";
         }
         else {
             r+=path.charAt(i);
@@ -40,33 +43,146 @@ public class Walker {
     }
     return newPath;
    }
-   public boolean checkPath(String path) {
+   public int checkPath(String path, boolean fullSol) {
        path=convertPath(path);
-       System.out.println(path);
-       System.exit(0);
        for (int i = 0; i < path.length(); i++) {
            step(path.charAt(i));
            int r = maze.getLocationType(this.location);
            if (r == Maze.WALL) {
                System.out.println("hit the wall");
-               return false;
+               return INVALID;
            } else if (r == Maze.INVALID) {
                System.out.println("hit invalid");
-               return false;
+               return INVALID;
            } else if (r == Maze.EXIT) {
                System.out.println("hit exit");
                if(i==path.length()-1){
-                   return true;
+                   return EXIT;
                }
                else{
                    System.out.println("Reached exit but there are more instructions");
-                   return false;
+                   return INVALID;
                }
+           }
+       }
+       int r = maze.getLocationType(this.location);
+       if(!fullSol && r==Maze.PASS && hasRightWall()){
+           return VALID;
+       }
+       else{
+           return INVALID;
+       }
+   }
+   public int tryStep(char instruction){
+       step(instruction);
+       if(maze.getLocationType(this.location)==Maze.EXIT){
+           return Walker.EXIT;
+       }
+       else if(maze.getLocationType(this.location)==Maze.PASS && hasRightWall()){
+           return Walker.VALID;
+       }
+       else{
+           return Walker.INVALID;
+       }
+   }
+   public String findPath(){
+       // F, LF, RF, LLF
+       String solution = "";
+       int success = 0;
+       while(true){
+           System.out.println("======== success at location"+ location.getRow()+","+location.getCol());
+           Coordinate currentLocation=location.copy();
+           // ======================================
+           success = tryStep('F');
+           if(success == Walker.EXIT ){
+               solution+="F";
+               break;
+           }
+           else if(success== Walker.VALID){
+               solution+="F";
+               continue;
+           }
+           else{
+               location=currentLocation.copy();
+
+           }
+           // ======================================
+
+           success = checkPath("FLF", false);
+           if(success == Walker.EXIT ){
+               solution+="FLF";
+               break;
+           }
+           else if(success== Walker.VALID){
+               solution+="FLF";
+               continue;
+           }
+           else{
+               location=currentLocation.copy();
+           }
+           // ======================================
+            // ======================================
+
+           success = checkPath("FRF", false);
+           if(success == Walker.EXIT ){
+               solution+="FRF";
+               break;
+           }
+           else if(success== Walker.VALID){
+               solution+="FRF";
+               continue;
+           }
+           else{
+               location=currentLocation.copy();
+           }
+           // ======================================
+           // ======================================
+
+           success = checkPath("LLF", false);
+           if(success == Walker.EXIT ){
+               solution+="LLF";
+               break;
+           }
+           else if(success== Walker.VALID){
+               solution+="LLF";
+               continue;
+           }
+           else{
+               location=currentLocation.copy();
+           }
+           // ======================================
+       }
+
+        return solution;
+   }
+   private boolean hasRightWall(){
+       if(this.direction==NORTH){
+           Coordinate c = new Coordinate(this.location.getRow(),this.location.getCol()+1);
+           if(maze.getLocationType(c)== Maze.WALL){
+               return true;
+           }
+       }
+       if(this.direction==EAST){
+           Coordinate c = new Coordinate(this.location.getRow()+1,this.location.getCol());
+           if(maze.getLocationType(c)== Maze.WALL){
+               return true;
+           }
+       }
+       if(this.direction==SOUTH){
+           Coordinate c = new Coordinate(this.location.getRow(),this.location.getCol()-1);
+           if(maze.getLocationType(c)== Maze.WALL){
+               return true;
+           }
+
+       }
+       if(this.direction==WEST){
+           Coordinate c = new Coordinate(this.location.getRow()-1,this.location.getCol());
+           if(maze.getLocationType(c)== Maze.WALL){
+               return true;
            }
        }
        return false;
    }
-
    public void step(char instruction){
        System.out.println("stepping instruction = " + instruction);
        if(instruction == 'L'){
