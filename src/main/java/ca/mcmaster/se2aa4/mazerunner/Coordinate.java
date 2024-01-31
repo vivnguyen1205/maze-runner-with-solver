@@ -18,5 +18,23 @@ public class Coordinate {
 
     }
 
+    public void setRow(int row) {
+        this.row = row;
+    }
 
+    public void setCol(int col) {
+        this.col = col;
+    }
+    public void goNorth(){
+        this.row--;
+    }
+    public void goSouth(){
+        this.row++;
+    }
+    public void goEast(){
+        this.col++;
+    }
+    public void goWest(){
+        this.col--;
+    }
 }
