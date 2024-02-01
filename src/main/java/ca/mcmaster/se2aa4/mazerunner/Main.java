@@ -32,6 +32,7 @@ public class Main {
             String path = cmd.getOptionValue("p");
             if(path==null || path.length()==0){
                 String solution = walker.findPath();
+
                 logger.info(solution);
             }
             else{

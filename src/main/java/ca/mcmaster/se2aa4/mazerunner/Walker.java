@@ -20,7 +20,7 @@ public class Walker {
         this.direction = EAST;
 
     }
-    private String compressPath(String path){
+    private String compressPath(String path){ // method to factorize path
         // FFRLLFFFRRF
         // 2FR2L3F2RF
         if(path == null|| path.length()==0){
@@ -45,7 +45,7 @@ public class Walker {
         }
         return solution;
     }
-    private String uncompressPath(String path){
+    private String uncompressPath(String path){ // method to unfactorize path
         String newPath = "";
         int repeater = 1;
         String r = "";
@@ -67,14 +67,14 @@ public class Walker {
         return newPath;
 
     }
-    public int checkPath(String path, boolean fullSol) {
+    public int checkPath(String path, boolean fullSol) { // method to check if user input path is correct
         path=uncompressPath(path);
         for (int i = 0; i < path.length(); i++) {
             step(path.charAt(i));
             int r = maze.getLocationType(this.location);
-            if (r == Maze.WALL) {
+            if (r == Maze.WALL) {// if reaches wall, path is invalid
                 return INVALID;
-            } else if (r == Maze.INVALID) {
+            } else if (r == Maze.INVALID) { // if goes out of bounds, its invalid
                 return INVALID;
             } else if (r == Maze.EXIT) {
                 if(i==path.length()-1){
@@ -114,7 +114,6 @@ public class Walker {
         String solution = "";
         int success = 0;
         while(true){
-            //System.out.println("======== success at location"+ location.getRow()+","+location.getCol());
             Coordinate currentLocation=location.copy();
             int currentDirection = this.direction;
 
@@ -244,6 +243,7 @@ public class Walker {
             }
         }
         solution=compressPath(solution);
+        System.out.println("Path solution is:" + solution);
         return solution;
     }
     private boolean hasRightWall(){
@@ -307,7 +307,6 @@ public class Walker {
             }
 
         }
-        //System.out.println("move to location ="+this.location.getRow() + "," + this.location.getCol());
     }
 
 }
