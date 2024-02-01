@@ -58,7 +58,7 @@ public class Maze {
     public Coordinate getStart(){
         return this.start;
     }
-    public int getLocationType(Coordinate location){
+    public int getLocationType(Coordinate location){ // classifying each coordinate with different types: wall, invalid, or pass
 
         if(location.getRow()<0|| location.getRow() >= this.numRows){ // if rownumber is greater than num rows or coordinate is less than 0, invalid
             return INVALID;
