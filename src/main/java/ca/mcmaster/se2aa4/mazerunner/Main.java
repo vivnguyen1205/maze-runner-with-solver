@@ -21,7 +21,7 @@ public class Main {
         try {
             Options options = new Options();
             options.addOption("i", true, "**** Reading the maze from file ");
-            options.addOption("p", true, "");
+            options.addOption("method", true, "");
 
             CommandLineParser parser = new DefaultParser();
 
@@ -29,21 +29,24 @@ public class Main {
             String mazeFile = cmd.getOptionValue("i");
             Maze maze = new Maze(mazeFile);
             Walker walker = new Walker(maze);
-            String path = cmd.getOptionValue("p");
-            if(path==null || path.length()==0){
-                String solution = walker.findPath();
+            String method = cmd.getOptionValue("method");
+            if(method.equals("dijkstra")){
+                String solution = walker.findDijkstraPath();
+                logger.info("No path input, Calculating path...");
+                logger.info("Path solution is:" + solution);
 
-                logger.info(solution);
+
+            }
+            else if(method.equals("righthand")){
+                String solution = walker.findRightHandPath();
+                logger.info("No path input, Calculating path...");
+                logger.info("Path solution is:" + solution);
+
             }
             else{
-                int success = walker.checkPath(path, true);
-                if(success==Walker.EXIT){
-                    logger.info("correct path");
-                }
-                else{
-                    logger.info("incorrect path");
-                }
+                logger.info("no method provided");
             }
+
         }
 
         catch(FileNotFoundException e ){

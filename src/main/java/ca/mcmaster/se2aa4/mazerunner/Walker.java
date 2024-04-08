@@ -46,7 +46,7 @@ public class Walker {
         return solution;
     }
     private String uncompressPath(String path){ // method to unfactorize path
-        String newPath = "";
+        String newPath = ""; // initializing empty string to put in unfactorized path in
         int repeater = 1;
         String r = "";
         for(int i =0;i <path.length();i++){
@@ -109,7 +109,7 @@ public class Walker {
 
 
 
-    public String findPath(){
+    public String findRightHandPath(){
         // F, LF, RF, LLF
         String solution = "";
         int success = 0;
@@ -243,7 +243,6 @@ public class Walker {
             }
         }
         solution=compressPath(solution);
-        System.out.println("Path solution is:" + solution);
         return solution;
     }
     private boolean hasRightWall(){
@@ -307,6 +306,9 @@ public class Walker {
             }
 
         }
+    }
+    public String findDijkstraPath(){
+        return "";
     }
 
 }
