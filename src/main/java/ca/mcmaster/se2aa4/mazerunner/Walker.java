@@ -308,7 +308,33 @@ public class Walker {
         }
     }
     public String findDijkstraPath(){
+        Coordinate currentLocation = this.location;
+
+
         return "";
     }
+    private String findDijkstraPathHelper(String history, Coordinate currentLocation){
+        String historyCopy = history;
+        // 1 ======================================
+        Coordinate myLocation = this.location;
+       int successForward = checkPath("F", false);
+//       int successRight = checkPath("RF", false);
+//       int successLeft = checkPath("LF", false);
+        if(successForward == Walker.EXIT ){
+            historyCopy+="F!";
+
+        }
+        else if(successForward== Walker.VALID){
+            historyCopy+="F";
+            findDijkstraPathHelper(historyCopy, currentLocation.goEast();)
+
+        }
+
+
+
+
+    }
+    public
 
 }
+
