@@ -1,5 +1,5 @@
 package ca.mcmaster.se2aa4.mazerunner;
-import ca.mcmaster.se2aa4.mazerunner.Coordinate;
+
 // MAZE is class to process the maze, find the entrance/exit and wall/passageway
 
 import java.io.BufferedReader;
@@ -17,6 +17,14 @@ public class Maze {
     private int numRows;
     private int numCols;
     private Coordinate start;
+
+    public int getNumRows(){
+        return numRows;
+    }
+    public int getNumCols(){
+        return numCols;
+    }
+
 
     private ArrayList<String> maze;
 
@@ -58,6 +66,9 @@ public class Maze {
     public Coordinate getStart(){
         return this.start;
     }
+
+
+
     public int getLocationType(Coordinate location){ // classifying each coordinate with different types: wall, invalid, or pass
 
         if(location.getRow()<0|| location.getRow() >= this.numRows){ // if rownumber is greater than num rows or coordinate is less than 0, invalid

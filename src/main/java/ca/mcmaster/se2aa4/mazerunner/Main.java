@@ -32,7 +32,6 @@ public class Main {
             String method = cmd.getOptionValue("method");
             if(method.equals("dijkstra")){
                 String solution = walker.findDijkstraPath();
-                logger.info("No path input, Calculating path...");
                 logger.info("Path solution is:" + solution);
 
 

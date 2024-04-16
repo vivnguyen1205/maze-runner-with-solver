@@ -1,6 +1,7 @@
 package ca.mcmaster.se2aa4.mazerunner;
-// class to
-import ca.mcmaster.se2aa4.mazerunner.Coordinate;
+
+import java.util.ArrayList;
+/// problem with historyListCopy.... i am not adding the right way i think.
 public class Walker {
     private Maze maze;
     private Coordinate location;
@@ -12,7 +13,7 @@ public class Walker {
     public static final int VALID = 1;
     public static final int INVALID = 2;
     public static final int EXIT = 3;
-
+    private Graph g;
 
     Walker(Maze maze){
         this.maze = maze;
@@ -87,7 +88,8 @@ public class Walker {
 
         }
         int r = maze.getLocationType(this.location);
-        if(!fullSol && r==Maze.PASS && hasRightWall()){
+        //if(!fullSol && r==Maze.PASS && hasRightWall()){
+        if(r==Maze.PASS){ // was above one before april 9.
             return VALID;
         }
         else{
@@ -308,33 +310,224 @@ public class Walker {
         }
     }
     public String findDijkstraPath(){
+        //create a graph as big as the maze to mimic the maze
+        g = new Graph(maze.getNumRows(),maze.getNumCols());
+        //create a new node that is the START of the maze
+        Node newNode = Node.createNode(this.location, Node.START);
+        //add the node to the graph
+        g.addNode(newNode, null, 0, ""); // go from null to newNode
         Coordinate currentLocation = this.location;
+        String history = "";
+        //keeps track of where the walker has walked
+        ArrayList<Coordinate> historyList = new ArrayList<>();
+        // this method will go across the whole maze, and find all the nodes
+        findDijkstraPathHelper(this.location, this.direction, newNode, 0, history,currentLocation, historyList);
+        //after this function executes the graph is complete
+        //print it for debugging purposes
+        g.printGraph();
 
+        // if we found the end, then the getEndNode will not be null
+        if (Node.getEndNode()== null){
+            return "There is no solution.";
+        } else {
+            String path = g.findDijkstraPath(); // returns the shortest path using the dijksstra's algorithm
+            return path;
+        }
+    }
+
+    //creates a copy of every coordinate within the history
+    private ArrayList<Coordinate> deepCopyHistory(ArrayList<Coordinate> list){
+        ArrayList<Coordinate> newList = new ArrayList<Coordinate>();
+        for (Coordinate c: list){
+            newList.add(c.copy());
+        }
+        return newList;
+    }
+
+    private boolean isInHistoryList(Coordinate c, ArrayList<Coordinate> list){
+        for (Coordinate c1: list){
+            if (c1.getRow() == c.getRow() && c1.getCol() == c.getCol()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //is this an intersection or a fork
+    private boolean isIntersection(int sF, int sR, int sL){
+        if (sF != INVALID && sR!=INVALID || sF != INVALID && sL!=INVALID ){
+            return true;
+        }
+        else if (sR != INVALID && sL!=INVALID ){
+            return true;
+        } else {
+            return false;
+        }
+
+
+
+    }
+
+    // the location and the direction must be dynamic, so include these in the parameters here.
+
+    // input parameters:
+    // paramLocation: the location where the walker currently is
+    // paramDirection: the direction where the walker is currently going (north, west, east...)
+    // lastNode:  the node from which the walker came here
+    // the rest of the parameters: are used for tracking where the walker has been
+    // so that we never go back to where we were to avoid an infinite loop
+    private String findDijkstraPathHelper(Coordinate paramLocation, int paramDirection, Node lastNode, int distance, String history, Coordinate tryLocation, ArrayList<Coordinate> historyList){
+
+        // creates a deep copy of the history list, to
+        // ensure that other recursive calls to this method do not break it.
+        ArrayList<Coordinate> historyListCopy = deepCopyHistory(historyList);
+
+        //check if the coordinate where we are we have already been to or not
+        if(isInHistoryList(paramLocation, historyListCopy)){
+            return ""; // we have already stepped here, so exit to ensure we don't go the same way agaon
+        } else {
+            //haven't been here yet, so add this spot to the history
+            historyListCopy.add(paramLocation.copy());
+        }
+        String historyCopy = history;
+
+
+        //should i be adding to the history now?
+        //historyListCopy.add(paramLocation.copy());
+        // 1 ======================================
+
+        int oD = this.direction;
+        Coordinate oL = this.location.copy();
+        this.location = paramLocation.copy();
+        this.direction = paramDirection;
+        //try each path and then reset the location and direction to what it was before.
+        int sF = checkPath("F", false);
+        this.direction = paramDirection; this.location = paramLocation.copy();
+        int sR = checkPath("RF", false); this.direction = paramDirection; this.location =paramLocation.copy();
+        int sL = checkPath("LF", false); this.direction = paramDirection; this.location = paramLocation.copy();
+
+
+        // we are at an intersection, if there is more than one direction we can go.
+        boolean intersection = isIntersection(sF, sR, sL);
+
+        /////////////
+        // when intersectioning, make sure that the maze isn't ruined, and the direction is set to new one maybe
+        ///////////////
+        // only can go forward
+        int newDirection = this.direction;
+
+        ////////////////////////////////////////////////////////////////////////
+        //if (sF != INVALID && sL == INVALID && sR == INVALID) {
+        String hs = historyCopy;
+        if (sF != INVALID) {  // we can go forward
+            historyCopy += "F";
+            Coordinate newCoordinate = this.location.copy();
+            //check to ensure that the newCoordinate is not in the list of history and if it is don't go here
+
+            switch (this.direction){  // don't change the direction and go where we were going
+                case EAST: newCoordinate.goEast();break;
+                case NORTH: newCoordinate.goNorth();break;
+                case SOUTH: newCoordinate.goSouth();break;
+                case WEST: newCoordinate.goWest();
+            }
+            if (true) { //!isInHistoryList(newCoordinate, historyListCopy)
+                this.direction = oD;this.location = oL.copy();
+                if (sF == Walker.EXIT){ // we reached an exit
+                    Node newNode = Node.createNode(newCoordinate, Node.EXIT);
+                    //add the exit to the graph
+                    g.addNode(newNode, lastNode, distance, historyCopy);
+                }
+                else if (intersection){
+                    Node newNode = Node.createNode(newCoordinate, Node.FORK);
+                    g.addNode(newNode, lastNode, distance, historyCopy); //go from lastnode to newNode
+                    findDijkstraPathHelper(newCoordinate, newDirection, newNode,0, historyCopy,newCoordinate, historyListCopy);
+                }
+                else {
+                    //historyListCopy.add(tryLocation.copy());
+                    findDijkstraPathHelper(newCoordinate, newDirection, lastNode,distance+1, historyCopy,newCoordinate, historyListCopy);
+                }
+            }
+        }
+        ////////////////////////////////////////////////////
+        this.location = paramLocation.copy();//tryLocation.copy();   /////// NEW
+        this.direction = paramDirection;
+        // only can go right
+        historyCopy = hs;
+        ////////////////////////////////////////////////////////////////////////
+        if (sR != INVALID) {
+            historyCopy += "RF";
+            Coordinate newCoordinate = this.location.copy();
+            //check to ensure that the newCoordinate is not in the list of history and if it is don't go here
+
+            switch (this.direction){
+                case EAST: newCoordinate.goSouth();newDirection = SOUTH; break;
+                case NORTH: newCoordinate.goEast();newDirection = EAST;break;
+                case SOUTH: newCoordinate.goWest();newDirection  = WEST;break;
+                case WEST: newCoordinate.goNorth();newDirection = NORTH;
+            }
+            if (true) {
+                this.direction = oD;this.location = oL.copy();
+                //if (sF == Walker.EXIT){
+                if (sR == Walker.EXIT){
+                    Node newNode = Node.createNode(newCoordinate, Node.EXIT);
+                    g.addNode(newNode, lastNode, distance, historyCopy); //go from lastnode to newNode
+                }
+                else if (intersection){
+                    Node newNode = Node.createNode(newCoordinate, Node.FORK);
+                    g.addNode(newNode, lastNode, distance, historyCopy); //go from lastnode to newNode
+                    findDijkstraPathHelper(newCoordinate, newDirection,newNode,0, historyCopy,newCoordinate, historyListCopy);
+                }
+                else {
+                    // historyListCopy.add(tryLocation.copy());
+                    findDijkstraPathHelper(newCoordinate, newDirection, lastNode,distance+1, historyCopy,newCoordinate, historyListCopy);
+                }
+            }
+        }
+        ////////////////////////////////////////////////////
+        // only can go left
+        this.location = paramLocation.copy();//tryLocation.copy();  //NEW
+        this.direction = paramDirection;
+        historyCopy = hs;
+        ////////////////////////////////////////////////////////////////////////
+        if (sL != INVALID) {
+            historyCopy += "LF";
+            Coordinate newCoordinate = this.location.copy();
+            //check to ensure that the newCoordinate is not in the list of history and if it is don't go here
+
+            switch (this.direction){
+                case EAST: newCoordinate.goNorth();newDirection = NORTH;break;
+                case NORTH: newCoordinate.goWest();newDirection = WEST;break;
+                case SOUTH: newCoordinate.goEast();newDirection=EAST;break;
+                case WEST: newCoordinate.goSouth();newDirection = SOUTH;
+            }
+            if (true) {
+                this.direction = oD;this.location = oL.copy();
+                //if (sF == Walker.EXIT){
+                if (sL == Walker.EXIT){
+                    Node newNode = Node.createNode(newCoordinate, Node.EXIT);
+                    g.addNode(newNode, lastNode, distance, historyCopy); //go from lastnode to newNode
+                }
+                else if (intersection){
+                    Node newNode = Node.createNode(newCoordinate, Node.FORK);
+                    g.addNode(newNode, lastNode, distance, historyCopy); //go from lastnode to newNode
+                    findDijkstraPathHelper(newCoordinate, newDirection, newNode,0, historyCopy,newCoordinate, historyListCopy);
+                }
+                else {
+                    //historyListCopy.add(tryLocation.copy());
+                    findDijkstraPathHelper(newCoordinate, newDirection, lastNode,distance+1, historyCopy,newCoordinate, historyListCopy);
+                }
+            }
+        }
+        ////////////////////////////////////////////////////
+
+
+
+        this.location = oL;
 
         return "";
-    }
-    private String findDijkstraPathHelper(String history, Coordinate currentLocation){
-        String historyCopy = history;
-        // 1 ======================================
-        Coordinate myLocation = this.location;
-       int successForward = checkPath("F", false);
-//       int successRight = checkPath("RF", false);
-//       int successLeft = checkPath("LF", false);
-        if(successForward == Walker.EXIT ){
-            historyCopy+="F!";
-
-        }
-        else if(successForward== Walker.VALID){
-            historyCopy+="F";
-            findDijkstraPathHelper(historyCopy, currentLocation.goEast();)
-
-        }
-
-
-
 
     }
-    public
+
 
 }
 
